@@ -1,0 +1,9 @@
+C:\Users\cv\source\repos\websoket1\websoket1\bin\Debug\websoket1.exe.config
+C:\Users\cv\source\repos\websoket1\websoket1\bin\Debug\websoket1.exe
+C:\Users\cv\source\repos\websoket1\websoket1\bin\Debug\websoket1.pdb
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.csproj.AssemblyReference.cache
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.csproj.CoreCompileInputs.cache
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.exe
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.pdb
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.Vista.Form1.resources
+C:\Users\cv\source\repos\websoket1\websoket1\obj\Debug\websoket1.csproj.GenerateResource.cache
