@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using websoket1;
-using websoket1.Vista;
+using Consumidor;
 
-namespace WebSocConsClient
+namespace Consuimidor
 {
     class Program
     {

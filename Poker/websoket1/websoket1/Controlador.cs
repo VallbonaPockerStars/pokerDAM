@@ -8,9 +8,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using websoket1.Vista;
+using Consumidor.Vista;
 
-namespace websoket1
+namespace Consumidor
 {
     class Controlador
     {

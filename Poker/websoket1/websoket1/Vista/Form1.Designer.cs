@@ -1,4 +1,4 @@
-﻿namespace websoket1.Vista
+﻿namespace Consumidor.Vista
 {
     partial class Form1
     {

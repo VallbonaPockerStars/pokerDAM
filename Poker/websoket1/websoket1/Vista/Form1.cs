@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace websoket1.Vista
+namespace Consumidor.Vista
 {
     public partial class Form1 : Form
     {
