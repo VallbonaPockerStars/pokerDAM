@@ -67,13 +67,13 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 55);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(469, 407);
+            this.listBox1.Size = new System.Drawing.Size(469, 82);
             this.listBox1.TabIndex = 3;
             this.listBox1.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
             // 
             // textBox3_Textoo
             // 
-            this.textBox3_Textoo.Location = new System.Drawing.Point(12, 472);
+            this.textBox3_Textoo.Location = new System.Drawing.Point(12, 159);
             this.textBox3_Textoo.Name = "textBox3_Textoo";
             this.textBox3_Textoo.Size = new System.Drawing.Size(379, 20);
             this.textBox3_Textoo.TabIndex = 4;
@@ -81,7 +81,7 @@
             // 
             // button2_Enviar
             // 
-            this.button2_Enviar.Location = new System.Drawing.Point(406, 469);
+            this.button2_Enviar.Location = new System.Drawing.Point(406, 150);
             this.button2_Enviar.Name = "button2_Enviar";
             this.button2_Enviar.Size = new System.Drawing.Size(75, 29);
             this.button2_Enviar.TabIndex = 5;
