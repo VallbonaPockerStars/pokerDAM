@@ -22,7 +22,5 @@ namespace WebSocket1.Models
             this.valor = valor;
             this.carta = carta;
         }
-        
-
     }
 }

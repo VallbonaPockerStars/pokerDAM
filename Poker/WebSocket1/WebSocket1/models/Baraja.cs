@@ -11,8 +11,6 @@ namespace WebSocket1.Models
 
     public class Baraja
     {
-       
-
         private Carta[] _baraja;
         private string[] _cartas = new string[]
         {
@@ -38,7 +36,6 @@ namespace WebSocket1.Models
             InicializarBaraja();
         }
 
-        // Método para inicializar la baraja
         private void InicializarBaraja()
         {
             for (int i = 0; i < _baraja.Length; i++)
@@ -47,13 +44,17 @@ namespace WebSocket1.Models
             }
         }
 
-        // Método para quitar una carta de la baraja
         public Carta QuitarCarta(int index)
         {
             if (index >= 0 && index < _baraja.Length && _baraja[index] != null)
             {
-                Carta carta = _baraja[index];
-                _baraja[index] = null;
+                Carta carta = new Carta(_baraja[index].id, _baraja[index].palo, _baraja[index].valor, _baraja[index].carta);
+                if (carta.carta.Equals("\U0001F0A0"))
+                {
+                return null;
+
+                }
+                _baraja[index].carta = "\U0001F0A0";
                 return carta;
             }
             else
@@ -63,7 +64,6 @@ namespace WebSocket1.Models
             }
         }
 
-        // Metodo que devuelve la longitud de la baraja actualizada por si se quita una carta
         public int LongitudBaraja()
         {
             int longitud = 0;
@@ -75,9 +75,6 @@ namespace WebSocket1.Models
                 }
             }
             return longitud;
-        }
-
-        
+        }     
     }
-
 }
