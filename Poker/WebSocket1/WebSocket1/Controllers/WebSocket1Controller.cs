@@ -4,22 +4,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
+using WebSocket1.Models;
 
 namespace WebSocket1.Controllers
 {
     public class WebSocketController : ApiController
     {
+       public static Baraja baraja = new Baraja();
+
         public HttpResponseMessage Get(string nom)
         {
-            // La crida al websocket serà del tipus   ws://host:port/api/websocket?nom=Pere
-
-            HttpContext.Current.AcceptWebSocketRequest(new SocketHandler(nom)); return new HttpResponseMessage(HttpStatusCode.SwitchingProtocols);
+            HttpContext.Current.AcceptWebSocketRequest(new SocketHandler(nom)); 
+            return new HttpResponseMessage(HttpStatusCode.SwitchingProtocols);
         }
 
         private class SocketHandler : WebSocketHandler
         {
+
             private static readonly WebSocketCollection Sockets = new WebSocketCollection();
             private static List<WebSocketHandler> Sockets2 = new List<WebSocketHandler>();
 
@@ -30,25 +36,112 @@ namespace WebSocket1.Controllers
                 _nom = nom;
             }
 
+
             public override void OnOpen()
             {
-                // Cuando un nuevo usuario se conecta: agregar el SocketHandler a la colección, notificar a todos la incorporación y darle la bienvenida
                 Sockets2.Add(this);
-                Send(": " + "Conectado");
+
+                if (Sockets2.Count >= 2)
+                {
+                    EnviarCartas();
+                }
+                else
+                {
+                    foreach (var socket in Sockets2)
+                    {
+                        socket.Send("Falta un jugador para comenzar el juego");
+                    }
+
+                    while (Sockets2.Count < 2)
+                    {
+                        
+                    }
+                    EnviarCartas();
+                }
+            }
+
+            private void EnviarCartas()
+            {
+                Random random = new Random();
+
+                List<string> mano = new List<string>();
+                for (int i = 0; i < 2; i++)
+                {
+                    mano.Add(ObtenerCartaAleatoria(random));
+                }
+
+                string mensaje = "Tu mano de poker: ";
+                Send(mensaje);
+
+                foreach (var carta in mano)
+                {
+                    Send(carta);
+                }
+
+                EnviarCarta(random);
+
+            }
+
+            private void EnviarCarta(Random random)
+            {
+                Task.Run(async () =>
+                {
+                    bool ganador = false;
+                    while (!ganador)
+                    {
+                        await Task.Delay(5000);
+
+                        string carta = ObtenerCartaAleatoria(random);
+                        foreach (var socket in Sockets2)
+                        {
+                            if (_nom == "ganador")
+                            {
+                                ganador = true;
+                            }
+                            socket.Send(carta);
+                        }
+                    }
+                });
+            }
+
+
+            private string ObtenerCartaAleatoria(Random random)
+            {
+                int index = random.Next(0, baraja.LongitudBaraja());
+                Carta carta = baraja.QuitarCarta(index);
+                while (carta == null)
+                {
+                    index = random.Next(0, baraja.LongitudBaraja());
+                    carta = baraja.QuitarCarta(index);
+                }
+
+                if (carta.carta.Equals("\U0001F0A0"))
+                {
+                    return ObtenerCartaAleatoria(random);
+                }
+                else
+                {
+                    return carta.carta;
+                }
             }
 
             public override void OnMessage(string mensaje)
             {
-                // Cuando un usuario envía un mensaje, asegurarse de que todos lo reciban
-                foreach (var socket in Sockets2)
+                if (mensaje == "Capturada")
                 {
-                    socket.Send(_nom+ ": " + mensaje);
+                    EnviarCarta(new Random());
                 }
+                else
+                {
+                    foreach (var socket in Sockets2)
+                    {
+                        socket.Send(_nom + ": " + mensaje);
+                    }
+                }              
             }
 
             public override void OnClose()
             {
-                // Cuando un usuario se desconecta, despedirlo, eliminar el SocketHandler de la colección y notificar a los demás que se ha ido
                 Sockets2.Remove(this);
                 Send(": " + "Desconectado");
             }

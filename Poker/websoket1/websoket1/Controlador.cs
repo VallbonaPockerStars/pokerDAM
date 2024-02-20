@@ -18,6 +18,7 @@ namespace Consumidor
         ClientWebSocket socket = new ClientWebSocket();
 
         new Form1 f = new Form1();
+        bool CartaMeva = false;  
 
         public Controlador()
         {
@@ -29,8 +30,51 @@ namespace Consumidor
         public void InitListeners()
         {
             f.button1_Conectar.Click += Button2_Click;
-
             f.button2_Enviar.Click += Enviar;
+        }
+
+        private void MevaCarta()
+        {
+
+            if (f.Carta3.Text == "\U0001F0A0")
+            {
+                f.Carta3.Text = f.CartaAsignar.Text;
+
+                string mensaje2 = "Capturada";
+                byte[] sendBytes2 = Encoding.UTF8.GetBytes(mensaje2);
+                var sendBuffer2 = new ArraySegment<byte>(sendBytes2);
+                socket.SendAsync(sendBuffer2, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
+            }
+            else if (f.Carta4.Text == "\U0001F0A0")
+            {
+                f.Carta4.Text = f.CartaAsignar.Text;
+                string mensaje = f.CartaAsignar.Text;
+                byte[] sendBytes = Encoding.UTF8.GetBytes(mensaje);
+                var sendBuffer = new ArraySegment<byte>(sendBytes);
+                socket.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
+
+                string mensaje2 = "Capturada";
+                byte[] sendBytes2 = Encoding.UTF8.GetBytes(mensaje2);
+                var sendBuffer2 = new ArraySegment<byte>(sendBytes2);
+                socket.SendAsync(sendBuffer2, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
+            }
+            else if (f.Carta5.Text == "\U0001F0A0")
+            {
+                f.Carta5.Text = f.CartaAsignar.Text;
+                string mensaje = f.CartaAsignar.Text;
+                byte[] sendBytes = Encoding.UTF8.GetBytes(mensaje);
+                var sendBuffer = new ArraySegment<byte>(sendBytes);
+                socket.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
+
+                string mensaje2 = "Capturada";
+                byte[] sendBytes2 = Encoding.UTF8.GetBytes(mensaje2);
+                var sendBuffer2 = new ArraySegment<byte>(sendBytes2);
+                socket.SendAsync(sendBuffer2, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
+            }
+            else
+            {
+                f.listBox1.Items.Add("No pots demanar carta");
+            }
         }
 
         private void Button2_Click(object sender, EventArgs e)
@@ -47,6 +91,13 @@ namespace Consumidor
 
         public void LoadData()
         {
+            f.Carta2.Text = "\U0001F0A0";
+            f.Carta5.Text = "\U0001F0A0";
+            f.Carta3.Text = "\U0001F0A0";
+            f.Carta1.Text = "\U0001F0A0";
+            f.Carta4.Text = "\U0001F0A0";
+            f.CartaAsignar.Text = "\U0001F0A0";
+
             f.button1_Conectar.Text = "Connectar";
             f.button1_Conectar.ForeColor = Color.Green;
 
@@ -58,22 +109,28 @@ namespace Consumidor
             string url = f.textBox1_URL.Text;
 
             //Url
-            string nom = f.textBox2_Nom.Text;
+            string nom = f.textBox2_Nom.Text; 
 
             string wsUri = $"wss://localhost:{url}/api/websocket?nom={nom}";
             string conect = $"S'ha conectat -> {nom}";
             f.listBox1.Items.Add(conect);
             await socket.ConnectAsync(new Uri(wsUri), cts.Token);
             var buffer = new byte[256];
-
+            
 
             if (socket.State == WebSocketState.Open)
             {
+
                 await Task.Factory.StartNew(
                     async () =>
                     {
+                        
                         var rcvBytes = new byte[256];
                         var rcvBuffer = new ArraySegment<byte>(rcvBytes);
+                        f.BT_Meva.Click += async (sender, e) =>
+                        {
+                            MevaCarta();
+                        };
                         while (true)
                         {
                             WebSocketReceiveResult rcvResult = await socket.ReceiveAsync(rcvBuffer, cts.Token);
@@ -83,11 +140,51 @@ namespace Consumidor
                             }
                             else
                             {
+
                                 byte[] msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(rcvResult.Count).ToArray();
                                 string rcvMsg = Encoding.UTF8.GetString(msgBytes);
-                                f.listBox1.Items.Add(rcvMsg);
-                            }
 
+                                if (rcvMsg.Equals("Falta un jugador para comenzar el juego"))
+                                {
+                                    f.listBox1.Items.Add(rcvMsg);
+                                }
+                                else if (rcvMsg.Equals("Tu mano de poker: "))
+                                {
+                                    f.listBox1.Items.Add(rcvMsg);
+                                    
+                                }
+                                else if (rcvMsg.StartsWith(nom +":"))
+                                {
+                                    f.listBox1.Items.Add(rcvMsg);
+                                }
+                                else if (rcvMsg.Contains(":"))
+                                {
+                                    f.listBox1.Items.Add(rcvMsg);
+                                }
+                                else
+                                {
+                                    if (f.Carta1.Text == "\U0001F0A0")
+                                    {
+                                        f.Carta1.Text = rcvMsg;
+
+                                    }
+                                    else if (f.Carta2.Text == "\U0001F0A0")
+                                    {
+                                        f.Carta2.Text = rcvMsg;
+
+                                    }
+
+                                    else if (f.CartaAsignar.Text == "\U0001F0A0")
+                                    {
+                                        f.CartaAsignar.Text = rcvMsg;
+                                    }
+                                    else
+                                    {
+                                        f.CartaAsignar.Text = rcvMsg;
+                                    }
+                                }
+
+                            }
                         }
                     }, cts.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 
@@ -96,8 +193,25 @@ namespace Consumidor
             }
         }
 
+
         public async void Enviar(object sender, EventArgs e)
         {
+            f.BT_Meva.Click += (s, ev) =>
+            {
+                if (f.Carta3.Text != "\U0001F0A0")
+                {
+                    f.Carta3.Text = f.CartaAsignar.Text;
+                }
+                else if (f.Carta4.Text != "\U0001F0A0")
+                {
+                    f.Carta4.Text = f.CartaAsignar.Text;
+                }
+                else if (f.Carta5.Text != "\U0001F0A0")
+                {
+                    f.Carta5.Text = f.CartaAsignar.Text;
+                }
+            };
+
             string mensaje = f.textBox3_Textoo.Text;
             if (mensaje == "Adeu")
             {
@@ -105,10 +219,40 @@ namespace Consumidor
                 f.Dispose();
                 return;
             }
+
             byte[] sendBytes = Encoding.UTF8.GetBytes(mensaje);
             var sendBuffer = new ArraySegment<byte>(sendBytes);
             await socket.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: cts.Token);
-          
+        }
+
+        private void Meva(object sender, EventArgs e)
+        {
+            if (CartaMeva == true)
+            {
+                CartaMeva = false;
+            }
+            else
+            {
+                CartaMeva = true;
+            }
+           
+        }
+
+        public async void Recibir()
+        {
+            var buffer = new byte[256];
+            var rcvBuffer = new ArraySegment<byte>(buffer);
+            WebSocketReceiveResult rcvResult = await socket.ReceiveAsync(rcvBuffer, cts.Token);
+            if (rcvResult.MessageType == WebSocketMessageType.Close)
+            {
+                await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+            }
+            else
+            {
+                byte[] msgBytes = rcvBuffer.Skip(rcvBuffer.Offset).Take(rcvResult.Count).ToArray();
+                string rcvMsg = Encoding.UTF8.GetString(msgBytes);
+                f.CartaAsignar.Text = rcvMsg;
+            }
         }
 
         public void desconectar()
